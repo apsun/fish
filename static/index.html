@@ -3,33 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>fish</title>
-    <style>
-        html, body {
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body > div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-    </style>
+    <title>fish - stupid simple file sharing</title>
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <div>
-        <label>
-            Select a file, or drag and drop anywhere on this page.
+    <div id="content">
+        <div id="info">
+            fish is a stupid simple file sharing service. Rules:
+            <ul>
+                <li>Files are deleted after 15 minutes</li>
+                <li>Each file is limited to 200 MiB</li>
+                <li>No illegal stuff, obviously</li>
+            </ul>
+            Note that files and metadata (file names) are NOT end to end
+            encrypted.
+        </div>
+        <label id="file-input-label" for="file-input">
+            Click here to select a file, or drag and drop anywhere on this page.
         </label>
-        <input type="file" id="file-input" multiple />
-        <table>
-            <tbody id="file-table">
-            </tbody>
+        <input id="file-input" type="file" multiple />
+        <table id="file-table">
+            <colgroup>
+                <col width="25%">
+                <col width="50%">
+                <col width="25%">
+            </colgroup>
+            <tbody id="file-table-body" />
         </table>
     </div>
     <script src="upload.js" defer></script>

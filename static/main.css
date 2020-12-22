@@ -1,0 +1,102 @@
+html, body {
+    /* Fill the whole page */
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    /* Horizontally center the content container in the page */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* Page font */
+    font-family: monospace;
+    font-size: medium;
+
+    /* Use a sane margin/padding system */
+    box-sizing: border-box;
+}
+
+* {
+    /* Apply sane properties globally */
+    box-sizing: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+
+#content {
+    /* Horizontally center everything inside the content container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* Set the content width to min(40em, page width) - padding */
+    padding: 16px;
+    max-width: 40em;
+    width: 100%;
+}
+
+#content > * + * {
+    /* Add some spacing between each element in the content container */
+    margin-top: 16px;
+}
+
+#file-input {
+    /* Hide the ugly file input controls (we style the label as a button) */
+    display: none;
+}
+
+#file-input-label {
+    /* Increase hit target size for the big main button */
+    padding: 8px;
+}
+
+#file-input-label, button {
+    /* Button and button-like control styling */
+    width: 100%;
+    border: 1px solid;
+    border-radius: 0;
+    text-align: center;
+    background-color: #eee;
+}
+
+#file-input-label:hover, button:hover {
+    background-color: #fff;
+}
+
+#file-input-label:active, button:active {
+    background-color: #eee;
+}
+
+#file-table {
+    /* Fill width, no extra space between cells */
+    table-layout: fixed;
+    border-spacing: 0;
+    width: 100%;
+}
+
+#file-table-body > tr > td {
+    /* Fixed height for each row */
+    height: 2.5em;
+
+    /* Ellipsize filename if too long */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#file-table-body > tr > td > input[type=text],
+#file-table-body > tr > td > progress,
+#file-table-body > tr > td > button {
+    /* Uniform styling for controls */
+    border: 1px solid;
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}

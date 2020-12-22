@@ -3,17 +3,14 @@
 
     let body = document.getElementsByTagName("body")[0];
     let fileInput = document.getElementById("file-input");
-    let fileTable = document.getElementById("file-table");
+    let fileTable = document.getElementById("file-table-body");
 
     function uploadFileImpl(tableRow, file) {
         let xhr = new XMLHttpRequest();
 
         // First column displays the file name.
         let filenameCol = document.createElement("td");
-        let filenameLabel = document.createElement("label");
-        filenameLabel.innerText = file.name;
-        filenameCol.align = "right";
-        filenameCol.appendChild(filenameLabel);
+        filenameCol.innerText = file.name;
         tableRow.appendChild(filenameCol);
 
         // Second column displays the upload progress bar.
@@ -53,7 +50,6 @@
 
             let input = document.createElement("input");
             input.type = "text";
-            input.readOnly = true;
             input.value = new URL(xhr.responseText, window.location.href).href;
             statusCol.replaceChild(input, progressBar);
 
@@ -75,7 +71,7 @@
             input.type = "text";
             input.readOnly = true;
             if (xhr.status === 0) {
-                input.value = "request failed";
+                input.value = "request failed :(";
             } else {
                 input.value = xhr.responseText;
             }
