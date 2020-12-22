@@ -13,8 +13,7 @@ body {
     align-items: center;
 
     /* Page font */
-    font-family: monospace;
-    font-size: medium;
+    font-family: sans-serif;
 
     /* Use a sane margin/padding system */
     box-sizing: border-box;
@@ -29,10 +28,9 @@ body {
 
 
 #content {
-    /* Horizontally center everything inside the content container */
+    /* Flex layout for the container as well */
     display: flex;
     flex-direction: column;
-    align-items: center;
 
     /* Set the content width to min(40em, page width) - padding */
     padding: 16px;
