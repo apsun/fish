@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -98,6 +99,31 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// File that bans directory enumeration.
+type blindFile struct {
+	http.File
+}
+
+func (f blindFile) Readdir(count int) ([]os.FileInfo, error) {
+	// Slap the user with a 500. Ideally we would return a 400,
+	// but the Go HTTP library treats any error coming out of this
+	// function as an internal error no matter what we do.
+	return nil, errors.New("directory enumeration is banned")
+}
+
+// Filesystem that bans directory enumeration.
+type blindFileSystem struct {
+	http.FileSystem
+}
+
+func (fs blindFileSystem) Open(name string) (http.File, error) {
+	file, err := fs.FileSystem.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return blindFile{file}, nil
+}
+
 // http.FileServer wrapper handler that makes the browser download the
 // file instead of rendering it.
 func asAttachment(h http.Handler) http.Handler {
@@ -118,7 +144,7 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	http.HandleFunc("/upload", uploadHandler)
 	http.Handle("/download/", http.StripPrefix("/download/", asAttachment(
-		http.FileServer(http.Dir(*storageFlag)),
+		http.FileServer(blindFileSystem{http.Dir(*storageFlag)}),
 	)))
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), nil)
