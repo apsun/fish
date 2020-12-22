@@ -6,14 +6,16 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
+	"regexp"
 )
 
 var storageFlag = flag.String("storage", "/tmp/fish", "where to store uploaded files")
 var portFlag = flag.Int("port", 80, "port to listen on")
 
+// Returns a cryptographically secure version 4 UUID.
 func uuid4() (string, error) {
 	buf := make([]byte, 16)
 	_, err := rand.Read(buf)
@@ -26,6 +28,17 @@ func uuid4() (string, error) {
 	return fmt.Sprintf("%x", buf), nil
 }
 
+// Set of characters that are not safe to use in a file name.
+var unsafeCharsRegex = regexp.MustCompile("[^A-Za-z0-9-_.]")
+
+// Replaces all non-whitelisted characters in `fileName` with an underscore.
+func safeFileName(fileName string) string {
+	return unsafeCharsRegex.ReplaceAllString(fileName, "_")
+}
+
+// POST handler for the /upload endpoint. Writes the file to the configured
+// storage directory, and writes a URL that the user can use to retrieve the
+// file to the response body.
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Only POST requests accepted", http.StatusBadRequest)
@@ -50,10 +63,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileName := header.Filename
+	fileName := safeFileName(header.Filename)
 	dirPath := filepath.Join(*storageFlag, fileID)
 	filePath := filepath.Join(dirPath, fileName)
-	urlPath := fmt.Sprintf("/download/%s/%s", fileID, fileName)
+	urlPath := fmt.Sprintf("/download/%s/%s", fileID, url.PathEscape(fileName))
 
 	err = os.Mkdir(dirPath, os.ModePerm)
 	if err != nil {
@@ -80,12 +93,13 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func downloadHandler(w http.ResponseWriter, r *http.Request) {
-	relativePath := strings.TrimPrefix(r.URL.Path, "/download/")
-	filePath := filepath.Join(*storageFlag, relativePath)
-
-	w.Header().Set("Content-Disposition", "attachment")
-	http.ServeFile(w, r, filePath)
+// http.FileServer wrapper handler that makes the browser download the
+// file instead of rendering it.
+func asAttachment(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Disposition", "attachment")
+		h.ServeHTTP(w, r)
+	})
 }
 
 func main() {
@@ -98,7 +112,9 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	http.HandleFunc("/upload", uploadHandler)
-	http.HandleFunc("/download/", downloadHandler)
+	http.Handle("/download/", http.StripPrefix("/download/", asAttachment(
+		http.FileServer(http.Dir(*storageFlag)),
+	)))
 
 	err = http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), nil)
 	if err != nil {
