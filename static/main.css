@@ -100,3 +100,15 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.filenameCol {
+    width: 25%;
+}
+
+.statusCol {
+    width: 50%;
+}
+
+.actionCol {
+    width: 25%;
+}
