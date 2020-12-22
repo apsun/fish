@@ -47,6 +47,10 @@
         // with the URL of the file and the cancel button with
         // a copy button.
         xhr.onload = (e) => {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                return xhr.onerror(e);
+            }
+
             let input = document.createElement("input");
             input.type = "text";
             input.readOnly = true;
@@ -70,12 +74,16 @@
             let input = document.createElement("input");
             input.type = "text";
             input.readOnly = true;
-            input.value = "Upload failed :-(";
+            if (xhr.status === 0) {
+                input.value = "request failed";
+            } else {
+                input.value = xhr.responseText;
+            }
             statusCol.replaceChild(input, progressBar);
 
-            let removeButton = document.createElement("button");
-            removeButton.innerText = "Retry";
-            removeButton.onclick = (e) => {
+            let retryButton = document.createElement("button");
+            retryButton.innerText = "Retry";
+            retryButton.onclick = (e) => {
                 // Reset the row (without removing the row itself,
                 // since that will change its position) and recurse.
                 while (tableRow.lastElementChild !== null) {
@@ -83,7 +91,7 @@
                 }
                 uploadFileImpl(tableRow, file);
             };
-            actionCol.replaceChild(removeButton, cancelButton);
+            actionCol.replaceChild(retryButton, cancelButton);
         };
 
         // When the request is manually canceled by the user,

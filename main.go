@@ -40,20 +40,25 @@ func safeFileName(fileName string) string {
 // storage directory, and writes a URL that the user can use to retrieve the
 // file to the response body.
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Only POST requests accepted", http.StatusBadRequest)
-		return
-	}
+	// Limit request to 200 MB
+	r.Body = http.MaxBytesReader(w, r.Body, 200<<10)
 
-	err := r.ParseMultipartForm(100 << 20)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if r.Method != "POST" {
+		http.Error(w, "only POST requests accepted", http.StatusBadRequest)
 		return
 	}
 
 	uploadedFile, header, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		if err == http.ErrMissingFile {
+			http.Error(
+				w,
+				"missing `file` param, or param was not a file",
+				http.StatusBadRequest,
+			)
+		} else {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 
