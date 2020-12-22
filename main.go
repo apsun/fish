@@ -19,7 +19,7 @@ import (
 var portFlag = flag.Int("port", 80, "port to listen on")
 var uploadDirFlag = flag.String("uploaddir", "/tmp/fish", "where to store uploaded files")
 var maxSizeFlag = flag.Int64("maxsize", 200<<20, "maximum file upload request size in bytes")
-var expiryFlag = flag.Duration("expiry", 15*time.Minute, "delete uploaded files after this many secs")
+var expiryFlag = flag.Duration("expiry", 15*time.Minute, "delete uploaded files after this duration")
 
 // Returns a cryptographically secure version 4 UUID.
 func uuid4() (string, error) {
