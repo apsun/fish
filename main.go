@@ -31,7 +31,9 @@ func uuid4() (string, error) {
 }
 
 // Set of characters that are not safe to use in a file name.
-var unsafeCharsRegex = regexp.MustCompile("[^A-Za-z0-9-_.]")
+// Use a whitelist for now for paranoia, maybe in the future we can use a
+// blacklist instead.
+var unsafeCharsRegex = regexp.MustCompile("[^A-Za-z0-9-_., ~!@#$^&()+=\\[\\]]")
 
 // Replaces all non-whitelisted characters in `fileName` with an underscore.
 func safeFileName(fileName string) string {
