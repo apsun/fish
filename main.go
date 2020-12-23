@@ -83,7 +83,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("writing %s\n", filePath)
 
-	err = os.Mkdir(dirPath, os.ModePerm)
+	err = os.Mkdir(dirPath, 0o700)
 	if err != nil {
 		msg := fmt.Sprintf("failed to create dir %s: %v", dirPath, err)
 		log.Println(msg)
@@ -91,13 +91,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fsFile, err := os.Create(filePath)
+	fsFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0o600)
 	if err != nil {
 		msg := fmt.Sprintf("failed to create file %s: %v", filePath, err)
 		log.Println(msg)
 		http.Error(w, msg, http.StatusInternalServerError)
 		return
 	}
+	defer fsFile.Close()
 
 	_, err = io.Copy(fsFile, uploadedFile)
 	if err != nil {
@@ -179,7 +180,7 @@ func monitor() {
 func main() {
 	flag.Parse()
 
-	err := os.MkdirAll(*uploadDirFlag, os.ModePerm)
+	err := os.MkdirAll(*uploadDirFlag, 0o700)
 	if err != nil {
 		log.Fatalf("failed to create upload dir %s: %v\n", *uploadDirFlag, err)
 	}
