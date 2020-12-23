@@ -99,14 +99,14 @@ body {
     padding: 0;
 }
 
-.filenameCol {
+.filename-col {
     width: 25%;
 }
 
-.statusCol {
+.status-col {
     width: 50%;
 }
 
-.actionCol {
+.action-col {
     width: 25%;
 }
