@@ -108,6 +108,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// I would like to use a 303 redirect here instead of writing
+	// the URL to the response body, but XMLHttpRequest doesn't allow
+	// disabling redirect following, and fetch() doesn't support
+	// upload progress.
 	_, err = io.WriteString(w, urlPath)
 	if err != nil {
 		msg := fmt.Sprintf("failed to write response URL %s: %v", urlPath, err)

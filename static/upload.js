@@ -130,7 +130,7 @@
         e.preventDefault();
         let files = e.dataTransfer.files;
         if (files.length > 0) {
-            uploadFileList(e.dataTransfer.files);
+            uploadFileList(files);
         }
     };
 
