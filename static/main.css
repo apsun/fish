@@ -1,4 +1,4 @@
-html, body {
+html, body, #root, #root-inner {
     /* Fill the whole page */
     padding: 0;
     margin: 0;
@@ -6,7 +6,14 @@ html, body {
     height: 100%;
 }
 
-body {
+* {
+    /* Apply sane properties globally */
+    box-sizing: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+#root-inner {
     /* Horizontally center the content container in the page */
     display: flex;
     flex-direction: column;
@@ -19,15 +26,7 @@ body {
     box-sizing: border-box;
 }
 
-* {
-    /* Apply sane properties globally */
-    box-sizing: inherit;
-    font-family: inherit;
-    font-size: inherit;
-}
-
-
-#content {
+.content {
     /* Flex layout for the container as well */
     display: flex;
     flex-direction: column;
@@ -38,46 +37,46 @@ body {
     width: 100%;
 }
 
-#content > * + * {
+.content > * + * {
     /* Add some spacing between each element in the content container */
     margin-top: 16px;
 }
 
-#file-input {
+.file-input > input {
     /* Hide the ugly file input controls (we style the label as a button) */
     display: none;
 }
 
-#file-input-label {
+.file-input {
     /* Increase hit target size for the big main button */
     padding: 8px;
 }
 
-#file-input-label, button {
+.file-input, button {
     /* Button and button-like control styling */
-    width: 100%;
+    display: block;
     border: 1px solid;
     border-radius: 0;
     text-align: center;
     background-color: #eee;
 }
 
-#file-input-label:hover, button:hover {
+.file-input:hover, button:hover {
     background-color: #fff;
 }
 
-#file-input-label:active, button:active {
+.file-input:active, button:active {
     background-color: #eee;
 }
 
-#file-table {
+.upload-table {
     /* Fill width, no extra space between cells */
     table-layout: fixed;
     border-spacing: 0;
     width: 100%;
 }
 
-#file-table-body > tr > td {
+.upload-table > tbody > tr > td {
     /* Fixed height for each row */
     height: 2.5em;
 
@@ -87,20 +86,20 @@ body {
     text-overflow: ellipsis;
 }
 
-#file-table-body > tr > td > input[type=text],
-#file-table-body > tr > td > progress,
-#file-table-body > tr > td > button {
+.upload-table > tbody > tr > td > input[type=text],
+.upload-table > tbody > tr > td > progress,
+.upload-table > tbody > tr > td > button {
     /* Uniform styling for controls */
     border: 1px solid;
     border-radius: 0;
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 4px;
 }
 
 .filename-col {
-    width: 25%;
+    width: 30%;
 }
 
 .status-col {
@@ -108,5 +107,5 @@ body {
 }
 
 .action-col {
-    width: 25%;
+    width: 20%;
 }

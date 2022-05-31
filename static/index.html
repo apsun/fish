@@ -7,30 +7,13 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <div id="content">
-        <div id="info">
-            fish is a stupid simple file sharing service. Rules:
-            <ul>
-                <li>Files are deleted after 15 minutes</li>
-                <li>Each file is limited to 200 MiB</li>
-                <li>No illegal stuff, obviously</li>
-            </ul>
-            Note that files and metadata (file names) are NOT end to end
-            encrypted.
-        </div>
-        <label id="file-input-label" for="file-input">
-            Click here to select a file, or drag and drop anywhere on this page.
-        </label>
-        <input id="file-input" type="file" multiple />
-        <table id="file-table">
-            <colgroup>
-                <col class="filename-col">
-                <col class="status-col">
-                <col class="action-col">
-            </colgroup>
-            <tbody id="file-table-body"></tbody>
-        </table>
-    </div>
-    <script src="upload.js" defer></script>
+    <div id="root" />
+    <!--
+    <script src="react.development.js"></script>
+    <script src="react-dom.development.js"></script>
+    -->
+    <script src="react.production.min.js"></script>
+    <script src="react-dom.production.min.js"></script>
+    <script src="fish.js"></script>
 </body>
 </html>
