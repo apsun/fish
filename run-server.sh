@@ -1,12 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-usergroup="fish:fish"
+user="fish"
+group="fish"
 port=8264
 
+userspec="$(id -u "${user}"):$(id -g "${group}")"
 scriptdir="$(dirname "$0")"
 tmpdir="$(mktemp -d)"
 CGO_ENABLED=0 go build -o "${tmpdir}/main" "${scriptdir}/main.go"
 cp -R "${scriptdir}/static" "${tmpdir}/static"
-sudo chown -R "${usergroup}" "${tmpdir}"
-sudo chroot --userspec "${usergroup}" "${tmpdir}" /main --port="${port}"
+sudo chown -R "${userspec}" "${tmpdir}"
+sudo chroot --userspec "${userspec}" "${tmpdir}" /main --port="${port}"
