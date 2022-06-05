@@ -112,6 +112,27 @@ class FileUpload {
     }
 }
 
+// Recursively traverses a FileSystemEntry object and returns all
+// normal files within it as File objects.
+async function traverseEntry(root) {
+    if (root.isFile) {
+        return [await new Promise(root.file.bind(root))];
+    }
+
+    // readEntries() can return only a partial result, so we
+    // need to call it in a loop.
+    let ret = [];
+    let reader = root.createReader();
+    let iterator = () => new Promise(reader.readEntries.bind(reader));
+    let entries;
+    do {
+        entries = await iterator();
+        let files = await Promise.all(entries.map(traverseEntry));
+        ret = ret.concat(files.flat());
+    } while (entries.length > 0);
+    return ret;
+}
+
 function tr(...children) {
     return React.createElement("tr", {},
         ...children.map((c) => React.createElement("td", {}, c))
@@ -308,6 +329,9 @@ class App extends React.Component {
     }
 
     addFileList(fileList) {
+        // Input may be a FileList object, which looks similar to
+        // an array but cannot be used directly with concat().
+        // Instead, we must explicitly iterate the elements.
         let files = this.state.files.concat();
         for (let file of fileList) {
             files.push(new FileUpload(file));
@@ -315,11 +339,30 @@ class App extends React.Component {
         this.setState({files: files});
     }
 
-    handleDrop = (e) => {
+    handleDrop = async (e) => {
         // Stop file from being opened
         e.preventDefault();
 
-        this.addFileList(e.dataTransfer.files);
+        let files = [];
+        for (let item of e.dataTransfer.items) {
+            if ("webkitGetAsEntry" in item) {
+                // webkitGetAsEntry() is a non-standard API that supports
+                // traversing directories, unlike getAsFile().
+                let entry = item.webkitGetAsEntry();
+                if (entry !== null) {
+                    files = files.concat(await traverseEntry(entry));
+                }
+            } else {
+                // Cannot tell the difference between files and directories,
+                // so instead check if the file size is non-zero.
+                let file = item.getAsFile();
+                if (file !== null && file.size > 0) {
+                    files.push(file);
+                }
+            }
+        }
+
+        this.addFileList(files);
     }
 
     handleDragOver = (e) => {
