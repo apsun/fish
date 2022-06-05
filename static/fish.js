@@ -208,11 +208,11 @@ class UploadRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            status: UploadStatus.NONE,
-            url: null,
-            error: null,
-            bytesUploaded: null,
-            bytesTotal: null,
+            status: props.file.status,
+            url: props.file.url,
+            error: props.file.error,
+            bytesUploaded: props.file.bytesUploaded,
+            bytesTotal: props.file.bytesTotal,
         };
     }
 
