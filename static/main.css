@@ -57,8 +57,10 @@ html, body, #root, #root-inner {
     display: block;
     border: 1px solid;
     border-radius: 0;
-    text-align: center;
+    border-color: #000;
+    color: #000;
     background-color: #eee;
+    text-align: center;
 }
 
 .file-input:hover, button:hover {
