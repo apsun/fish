@@ -227,13 +227,26 @@ class UploadRow extends React.Component {
     }
 
     componentDidMount() {
-        this.props.file.addListener(this.handleFileUpdate);
         this.props.file.start();
+        this.props.file.addListener(this.handleFileUpdate);
+        this.handleFileUpdate(this.props.file);
     }
 
     componentWillUnmount() {
-        this.props.file.abort();
         this.props.file.removeListener(this.handleFileUpdate);
+        this.props.file.abort();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.file === prevProps.file) {
+            return;
+        }
+
+        prevProps.file.removeListener(this.handleFileUpdate);
+        prevProps.file.abort();
+        this.props.file.start();
+        this.props.file.addListener(this.handleFileUpdate);
+        this.handleFileUpdate(this.props.file);
     }
 
     render() {
