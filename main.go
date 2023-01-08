@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -159,21 +158,30 @@ func asAttachment(h http.Handler) http.Handler {
 // expiry time.
 func monitor() {
 	for {
-		files, err := ioutil.ReadDir(*uploadDirFlag)
+		entries, err := os.ReadDir(*uploadDirFlag)
 		if err != nil {
 			log.Fatalf("failed to enumerate %s: %v\n", *uploadDirFlag, err)
 		}
 
 		now := time.Now()
-		for _, f := range files {
-			ts := f.ModTime()
-			if now.Sub(ts) > *expiryFlag {
-				path := filepath.Join(*uploadDirFlag, f.Name())
-				log.Printf("purging %s (created at %v)\n", path, ts)
-				err = os.RemoveAll(path)
-				if err != nil {
-					log.Printf("failed to purge %s: %v\n", path, err)
-				}
+		for _, f := range entries {
+			path := filepath.Join(*uploadDirFlag, f.Name())
+
+			info, err := f.Info()
+			if err != nil {
+				log.Printf("failed to stat %s: %v\n", path, err)
+				continue
+			}
+
+			ts := info.ModTime()
+			if now.Sub(ts) < *expiryFlag {
+				continue
+			}
+
+			log.Printf("purging %s (created at %v)\n", path, ts)
+			err = os.RemoveAll(path)
+			if err != nil {
+				log.Printf("failed to purge %s: %v\n", path, err)
 			}
 		}
 
